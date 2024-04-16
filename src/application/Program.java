@@ -41,7 +41,7 @@ public class Program {
 		if (UsersDatabase.login(email, password, dataBase)) {
 			User user = UsersDatabase.getUser(email, password, dataBase);
 			System.out.println("\nWelcome " + user.getFirstName()+" "+user.getLastName());
-			user.showList();
+			user.showList(dataBase);
 		}
 		else {
 			System.out.println("Incorrect email or password");
@@ -81,7 +81,7 @@ public class Program {
 		visitor.setPhoneNumber(phoneNumber);
 		visitor.setPassword(password);
 		UsersDatabase.addVisitor(visitor, dataBase);
-		visitor.showList();
+		visitor.showList(dataBase);
 	}
 
 }

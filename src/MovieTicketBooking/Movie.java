@@ -81,6 +81,4 @@ public class Movie {
 		this.shows = shows;
 	}
 	
-	
-	
 }
