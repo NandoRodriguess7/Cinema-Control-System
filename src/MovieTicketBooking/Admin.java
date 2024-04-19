@@ -7,9 +7,9 @@ import DataBase.MoviesDataBase;
 import DataBase.UsersDatabase;
 
 public class Admin extends User {
-	
+
 	private Scanner scanner;
-	
+
 	public Admin() {
 		super();
 		scanner = new Scanner(System.in);
@@ -18,26 +18,43 @@ public class Admin extends User {
 	@Override
 	public void showList(Database database) {
 		System.out.println("1. Add New Movie");
-		System.out.println("2. Update Movie");
-		System.out.println("3. Show Movies");
+		System.out.println("2. Show Movies");
+		System.out.println("3. Update Movie");
 		System.out.println("4. Delete Movie");
 		System.out.println("5. Add Show Time");
-		System.out.println("6. Update Show Time");
-		System.out.println("7. Show Show Times");
+		System.out.println("6. Show Show Times");
+		System.out.println("7. Update Show Time");
 		System.out.println("8. Delete Show Time");
 		System.out.println("9. Add New Admin");
 		System.out.println("10. Quit");
 		int i = scanner.nextInt();
-		switch(i) {
+		switch (i) {
 		case 1:
-			MoviesDataBase.addNewMovie(database, scanner, this);
+			MoviesDataBase.addNewMovie(database, scanner);
+			showList(database);
 			break;
-			case 9:
-				createNewAccount(database);
-				break;
+		case 2:
+			MoviesDataBase.showMovies(database);
+			showList(database);
+			break;
+		case 3:
+			MoviesDataBase.updateMovie(database, scanner);
+			showList(database);
+			break;
+		case 4 :
+			MoviesDataBase.deleteMove(database, scanner);
+			showList(database);
+			break;
+		case 9:
+			createNewAccount(database);
+			break;
+		case 10:
+			System.out.println("Thanks for visiting us!");
+			scanner.close();
+			break;
 		}
 	}
-	
+
 	private void createNewAccount(Database database) {
 		System.out.println("Enter your first name: ");
 		String firstName = scanner.next();
@@ -72,5 +89,5 @@ public class Admin extends User {
 		UsersDatabase.addAdmin(admin, database);
 		showList(database);
 	}
-	
+
 }

@@ -81,4 +81,14 @@ public class Movie {
 		this.shows = shows;
 	}
 	
+	public void print() {
+		System.out.println(ID+"\t");
+		System.out.println(Name+"\t");
+		System.out.println(Language+"\t\t");
+		System.out.println(Genre+"\t");
+		System.out.println(RunningTime+"Minutes\t");
+		System.out.println(Starring+"\t\t");
+		System.out.println(Rating+"\n");
+	}
+	
 }

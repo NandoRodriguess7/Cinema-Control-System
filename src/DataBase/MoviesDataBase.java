@@ -10,8 +10,8 @@ import MovieTicketBooking.Movie;
 
 public class MoviesDataBase {
 
-	public static void addNewMovie(Database database, Scanner sc, Admin admin) {
-		
+	public static void addNewMovie(Database database, Scanner sc) {
+
 		System.out.println("Enter Movie Name: ");
 		String name = sc.next();
 		System.out.println("Enter Movie Language: ");
@@ -25,16 +25,19 @@ public class MoviesDataBase {
 		System.out.println("Enter Movie Rating: ");
 		String rating = sc.next();
 		int ID = getNextID(database);
-		
-		String insert = "INSERT INTO `movies`(`ID`, `Name`, `Language`, `Genre`, `Running Time`, `Starring`, `Rating`) VALUES ('"+ID+"','"+name+"',"
-				+ "'"+language+"','"+genre+"','"+runningTime+"','"
-						+ ""+starring+"','"+rating+"');";
+
+		String insert = "INSERT INTO `movies`(`ID`, `Name`, `Language`, `Genre`, `Running Time`, `Starring`, `Rating`) VALUES ('"
+				+ ID + "','" + name + "'," + "'" + language + "','" + genre + "','" + runningTime + "','" + ""
+				+ starring + "','" + rating + "');";
+
+		String create = "CREATE TABLE `Movie " + ID + " - Shows ` " 
+		+ "(ID int, showTime text, capacity int, "
+				+ "avaibleSeats int, place text)";
 		try {
 			database.getStatement().execute(insert);
+			database.getStatement().execute(create);
 			System.out.println("Movie added sucessfully\n");
-			admin.showList(database);
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -70,6 +73,113 @@ public class MoviesDataBase {
 			ID = lastMovie.getID() + 1;
 		}
 		return ID;
+	}
+
+	public static void updateMovie(Database database, Scanner s) {
+		System.out.println("Enter movie ID (int) (-1 to show all movies): ");
+		int ID = s.nextInt();
+		while (ID == -1) {
+			showMovies(database);
+			System.out.println("Enter Movie ID (int) (-1 to show all movies): ");
+			ID = s.nextInt();
+		}
+
+		Movie movie = getMovie(ID, database);
+
+		System.out.println("Enter Movie Name (-1 to keep old value): ");
+		String name = s.next();
+		if (!name.equals("-1"))
+			movie.setName(name);
+
+		System.out.println("Enter Movie Language (-1 to keep old value): ");
+		String language = s.next();
+		if (!name.equals("-1"))
+			movie.setLanguage(language);
+
+		System.out.println("Enter Movie Genre (-1 to keep old value): ");
+		String genre = s.next();
+		if (!genre.equals("-1"))
+			movie.setGenre(genre);
+
+		System.out.println("Enter Movie Running Time (-1 to keep old value): ");
+		int runningTime = s.nextInt();
+		if (runningTime != -1)
+			movie.setRunningTime(runningTime);
+
+		System.out.println("Enter Movie Starring (-1 to keep old value): ");
+		String starring = s.next();
+		if (!starring.equals("-1"))
+			movie.setStarring(starring);
+
+		System.out.println("Enter Movie Rating (-1 to keep old value): ");
+		String rating = s.next();
+		if (!rating.equals("-1"))
+			movie.setRating(rating);
+
+		String update = "UPDATE `movies` SET `Name`='" + movie.getName() 
+		        + "',`Language`='" + movie.getLanguage()
+				+ "',`Genre`='" + movie.getGenre()
+				+ "',`Running Time`='" + movie.getRunningTime() 
+				+"',`Starring`='"+ movie.getStarring() 
+				+ "',`Rating`='" + movie.getRating() 
+				+ "' WHERE `ID` = " + movie.getID() + ";";
+		try {
+			database.getStatement().execute(update);
+			System.out.println("Movie updated sucessfully");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static void showMovies(Database database) {
+		System.out.println("------------------------------------------------------");
+		System.out.println("ID\tName\tLanguage\tGenre\tRunning Time\tStarring\tRating");
+		for (Movie m : getAllMovies(database)) {
+			m.print();
+		}
+		System.out.println("-----------------------------------------------------");
+	}
+
+	public static Movie getMovie(int ID, Database database) {
+		Movie movie = new Movie();
+		String select = "SELECT `ID`, `Name`, `Language`, `Genre`, `Running Time`,"
+				+ " `Starring`, `Rating` FROM `movies` WHERE `ID`= " + ID + ";";
+		try {
+			ResultSet rs = database.getStatement().executeQuery(select);
+			rs.next();
+			movie.setID(rs.getInt("ID"));
+			movie.setName(rs.getString("Name"));
+			movie.setLanguage(rs.getString("Language"));
+			movie.setGenre(rs.getString("Genre"));
+			movie.setRunningTime(rs.getInt("Running Time"));
+			movie.setStarring(rs.getString("Starring"));
+			movie.setRating(rs.getString("Rating"));
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+		return movie;
+	}
+	
+	public static void deleteMove(Database database, Scanner s) {
+		System.out.println("Enter Movie ID (-1 to show all movies): ");
+		int ID = s.nextInt();
+		while (ID==-1) {
+			showMovies(database);
+			System.out.println("Enter Movie ID (-1 to show all movies): ");
+			ID = s.nextInt();
+		}
+		String delete = "DELETE FROM `movies` WHERE `ID` = "+ID+" ;";
+		String drop = "DROP TABLE `Movie "+ID+" - Shows `;";
+		try {
+			database.getStatement().execute(delete);
+			database.getStatement().execute(drop);
+			System.out.println("Movie deleted sucessfully");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
