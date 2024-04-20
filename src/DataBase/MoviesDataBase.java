@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import MovieTicketBooking.Booking;
 import MovieTicketBooking.Movie;
 import MovieTicketBooking.Show;
 
@@ -350,6 +351,117 @@ public class MoviesDataBase {
 			e.printStackTrace();
 		}
 		return show;
+	}
+	
+	public static void deleteShow(Database database, Scanner s) {
+		System.out.println("Enter Movie ID (-1 to show all movies): ");
+		int movieID = s.nextInt();
+		while (movieID == -1) {
+			showMovies(database);
+			System.out.println("Enter Movie ID (-1 to show all movies): ");
+			movieID = s.nextInt();
+		}
+		
+		System.out.println("Enter Movie ID (-1 to show all shows): ");
+		int showID = s.nextInt();
+		while (showID == -1) {
+			showMovies(database);
+			System.out.println("Enter Movie ID (-1 to show all shows): ");
+			showID = s.nextInt();
+			
+			String delete = "DELETE FROM `movies "+movieID+" - shows"
+					+ "` WHERE `ID` = "+showID+" ;";
+			try {
+				database.getStatement().execute(delete);
+				System.out.println("Show deleted sucessfully");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void bookTicket(Database database, Scanner s, int userID) {
+		System.out.println("Enter Movie ID (-1 to show all movies): ");
+		int movieID = s.nextInt();
+		while (movieID == -1) {
+			showMovies(database);
+			System.out.println("Enter Movie ID (-1 to show all movies): ");
+			movieID = s.nextInt();
+		}
+		
+		System.out.println("Enter Movie ID (-1 to show all shows): ");
+		int showID = s.nextInt();
+		while (showID == -1) {
+			showMovies(database);
+			System.out.println("Enter Movie ID (-1 to show all shows): ");
+			showID = s.nextInt();
+			
+			System.out.println("Enter number of seats (int): ");
+			int seats = s.nextInt();
+			
+			int bookingID = getNextBookingID(database, userID);
+			
+			Show show = getShowTime(movieID, showID, database);
+			show.setAvailableSeats(show.getAvaibleSeats()-seats);
+			
+			String insert = "INSERT INTO `user "+userID+" - bookings`"
+					+ "(`ID`, `Seats`, `MovieID`, `ShowID`) VALUES "
+					+ "('"+bookingID+"','"+seats+"','"+movieID+"','"+showID+"')";
+			
+			String update = "UPDATE `movies "+movieID+" - shows` SET "
+					+ "`showTime`='"+show.getDate()+" "+show.getTime()+"',"
+							+ "`capacity`='"+show.getCapacity()+"',"
+							+ "`availableSeats`='"+show.getAvaibleSeats()+"',"
+							+ "`place`='"+show.getPlace()+"' WHERE `ID` = "+show.getID()+";";
+			
+			try {
+				database.getStatement().execute(insert);
+				database.getStatement().execute(update);
+				System.out.println("Booked sucessfully");
+			}
+			catch (SQLException e){
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private static ArrayList<Booking> getUserBookings(Database database, int userID){
+		ArrayList<Booking> bookings = new ArrayList<>();
+		ArrayList<Integer> movieIDs = new ArrayList<>();
+		ArrayList<Integer> showIDs = new ArrayList<>();
+		String select = "SELECT * FROM `user "+userID+" - bookings`;";
+		try {
+			ResultSet rs = database.getStatement().executeQuery(select);
+			while(rs.next()) {
+				Booking booking = new Booking();
+				booking.setID(rs.getInt("ID"));
+				booking.setSeats(rs.getInt("Seats"));
+				int movieID = rs.getInt("MovieID");
+				int showID = rs.getInt("ShowID");
+				movieIDs.add(movieID);
+				showIDs.add(showID);
+				bookings.add(booking);
+			}
+			for (int i=0; i<bookings.size(); i++) {
+				Movie movie = getMovie(movieIDs.get(i), database);
+				Show show = getShowTime(movieIDs.get(i), showIDs.get(i), database);
+				bookings.get(i).setMovie(movie);
+				bookings.get(i).setShow(show);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return bookings;
+	}
+	
+	private static int getNextBookingID(Database database, int userID) {
+		int ID = 0;
+		ArrayList<Booking> bookings = getUserBookings(database, userID);
+		int size = bookings.size();
+		if (size>0) {
+			Booking lastBooking = bookings.get(size-1);
+		}
+		return ID;
 	}
 
 }
