@@ -1,13 +1,14 @@
 package MovieTicketBooking;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Show {
 	
 	private int ID;
 	private LocalDateTime showTime;
 	private int capacity;
-	private int bookedSeats;
+	private int availableSeats;
 	private String place;
 	
 	public Show() {}
@@ -36,12 +37,12 @@ public class Show {
 		this.capacity = capacity;
 	}
 
-	public int getBookedSeats() {
-		return bookedSeats;
+	public int getAvaibleSeats() {
+		return availableSeats;
 	}
 
-	public void setBookedSeats(int bookedSeats) {
-		this.bookedSeats = bookedSeats;
+	public void setAvailableSeats(int availableSeats) {
+		this.availableSeats = availableSeats;
 	}
 
 	public String getPlace() {
@@ -52,6 +53,23 @@ public class Show {
 		this.place = place;
 	}
 	
+	public String getDate() {
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		return showTime.format(dateFormatter);
+	}
 	
+	public String getTime() {
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+		return showTime.format(timeFormatter);
+	}
+	
+	public void print() {
+		System.out.println(ID+"\t");
+		System.out.println(getDate()+"\t");
+		System.out.println(getTime()+"\t");
+		System.out.println(capacity+"\t");
+		System.out.println(availableSeats+"\t\t");
+		System.out.println(place+"\n");
+	}
 	
 }

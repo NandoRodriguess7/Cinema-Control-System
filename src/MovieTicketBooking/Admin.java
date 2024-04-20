@@ -41,9 +41,20 @@ public class Admin extends User {
 			MoviesDataBase.updateMovie(database, scanner);
 			showList(database);
 			break;
-		case 4 :
+		case 4:
 			MoviesDataBase.deleteMove(database, scanner);
 			showList(database);
+			break;
+		case 5:
+			MoviesDataBase.addShowTime(database, scanner);
+			showList(database);
+			break;
+		case 6:
+			MoviesDataBase.showShowTimes(database, scanner);
+			showList(database);
+			break;
+		case 7:
+			MoviesDataBase.editShowTime(database, scanner);
 			break;
 		case 9:
 			createNewAccount(database);
