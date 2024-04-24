@@ -41,6 +41,12 @@ public class Booking {
 		this.show = show;
 	}
 	
-	
+	public void print() {
+		System.out.println(ID+"\t");
+		System.out.println(seats+"\t");
+		System.out.println(movie.getName()+"\t");
+		System.out.println(show.getDate()+"\t");
+		System.out.println(show.getTime()+"\n");
+	}
 	
 }

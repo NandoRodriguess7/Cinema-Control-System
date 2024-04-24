@@ -37,7 +37,7 @@ public class Show {
 		this.capacity = capacity;
 	}
 
-	public int getAvaibleSeats() {
+	public int getAvailableSeats() {
 		return availableSeats;
 	}
 

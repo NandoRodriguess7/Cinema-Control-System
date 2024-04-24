@@ -159,7 +159,7 @@ public class MoviesDataBase {
 		return movie;
 	}
 
-	public static void deleteMove(Database database, Scanner s) {
+	public static void deleteMovie(Database database, Scanner s) {
 		System.out.println("Enter Movie ID (-1 to show all movies): ");
 		int ID = s.nextInt();
 		while (ID == -1) {
@@ -167,6 +167,15 @@ public class MoviesDataBase {
 			System.out.println("Enter Movie ID (-1 to show all movies): ");
 			ID = s.nextInt();
 		}
+		
+		ArrayList<Show> shows = getAllMovieShows(database, ID);
+		for (Show show : shows) {
+			if (show.getAvailableSeats()<show.getCapacity()) {
+				System.out.println("There is a booking on this movie in show: "+show.getID());
+				return;
+			}
+		}
+		
 		String delete = "DELETE FROM `movies` WHERE `ID` = " + ID + " ;";
 		String drop = "DROP TABLE `Movie " + ID + " - Shows `;";
 		try {
@@ -269,7 +278,7 @@ public class MoviesDataBase {
 		if (capacity!= -1) {
 			int oldCapacity = s.nextInt();
 			int newSeats = capacity-oldCapacity;
-			int newAvailable = show.getAvaibleSeats()+newSeats;
+			int newAvailable = show.getAvailableSeats()+newSeats;
 			show.setAvailableSeats(newAvailable);
 			show.setCapacity(capacity);
 		}
@@ -282,7 +291,7 @@ public class MoviesDataBase {
 		String update = "UPDATE `movies "+movieID+" - shows` SET "
 				+ "`showTime`='"+show.getDate()+" "+show.getTime()+"',"
 						+ "`capacity`='"+show.getCapacity()+"',"
-						+ "`availableSeats`='"+show.getAvaibleSeats()+"',"
+						+ "`availableSeats`='"+show.getAvailableSeats()+"',"
 						+ "`place`='"+show.getPlace()+"' WHERE `ID` = "+show.getID()+";";
 		try {
 			database.getStatement().execute(update);
@@ -332,7 +341,7 @@ public class MoviesDataBase {
 		return shows;
 	}
 
-	private static Show getShowTime(int movieID, int showID, Database database) {
+	public static Show getShowTime(int movieID, int showID, Database database) {
 		Show show = new Show();
 		String select = "SELECT `ID`, `showTime`, `capacity`, `availableSeats`, " + "`place` FROM `movies " + movieID
 				+ " - shows` WHERE `ID` = " + showID + " ;";
@@ -368,7 +377,14 @@ public class MoviesDataBase {
 			showMovies(database);
 			System.out.println("Enter Movie ID (-1 to show all shows): ");
 			showID = s.nextInt();
+		}
 			
+		    Show show = getShowTime(movieID, showID, database);
+		    if (show.getAvailableSeats()<show.getCapacity()) {
+		    	System.out.println("There is a booking on this show!");
+		    	return;
+		    }
+		    
 			String delete = "DELETE FROM `movies "+movieID+" - shows"
 					+ "` WHERE `ID` = "+showID+" ;";
 			try {
@@ -377,10 +393,9 @@ public class MoviesDataBase {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		}
 	}
 	
-	public void bookTicket(Database database, Scanner s, int userID) {
+	public static void bookTicket(Database database, Scanner s, int userID) {
 		System.out.println("Enter Movie ID (-1 to show all movies): ");
 		int movieID = s.nextInt();
 		while (movieID == -1) {
@@ -402,7 +417,7 @@ public class MoviesDataBase {
 			int bookingID = getNextBookingID(database, userID);
 			
 			Show show = getShowTime(movieID, showID, database);
-			show.setAvailableSeats(show.getAvaibleSeats()-seats);
+			show.setAvailableSeats(show.getAvailableSeats()-seats);
 			
 			String insert = "INSERT INTO `user "+userID+" - bookings`"
 					+ "(`ID`, `Seats`, `MovieID`, `ShowID`) VALUES "
@@ -411,7 +426,7 @@ public class MoviesDataBase {
 			String update = "UPDATE `movies "+movieID+" - shows` SET "
 					+ "`showTime`='"+show.getDate()+" "+show.getTime()+"',"
 							+ "`capacity`='"+show.getCapacity()+"',"
-							+ "`availableSeats`='"+show.getAvaibleSeats()+"',"
+							+ "`availableSeats`='"+show.getAvailableSeats()+"',"
 							+ "`place`='"+show.getPlace()+"' WHERE `ID` = "+show.getID()+";";
 			
 			try {

@@ -2,6 +2,7 @@ package MovieTicketBooking;
 
 import java.util.Scanner;
 
+import DataBase.BookingsDatabase;
 import DataBase.Database;
 import DataBase.MoviesDataBase;
 import DataBase.UsersDatabase;
@@ -26,7 +27,8 @@ public class Admin extends User {
 		System.out.println("7. Update Show Time");
 		System.out.println("8. Delete Show Time");
 		System.out.println("9. Add New Admin");
-		System.out.println("10. Quit");
+		System.out.println("10. Show show bookings");
+		System.out.println("11. Quit");
 		int i = scanner.nextInt();
 		switch (i) {
 		case 1:
@@ -42,7 +44,7 @@ public class Admin extends User {
 			showList(database);
 			break;
 		case 4:
-			MoviesDataBase.deleteMove(database, scanner);
+			MoviesDataBase.deleteMovie(database, scanner);
 			showList(database);
 			break;
 		case 5:
@@ -64,6 +66,10 @@ public class Admin extends User {
 			createNewAccount(database);
 			break;
 		case 10:
+			BookingsDatabase.showMovieBookings(database, scanner);
+			showList(database);
+			break;
+		case 11:
 			System.out.println("Thanks for visiting us!");
 			scanner.close();
 			break;
